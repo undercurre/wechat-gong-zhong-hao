@@ -1,7 +1,7 @@
 import { WechatService } from './wechat.service';
 import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import * as crypto from 'crypto';
-import { response } from 'express';
+import * as xml2js from 'xml2js';
 
 @Controller('wechat')
 export class WechatController {
@@ -22,20 +22,26 @@ export class WechatController {
   }
 
   @Post('server')
-  async handleWechatMessage(@Req() req, @Res() res) {
-    const xmlData = req.body; // 获取微信发送的消息内容
+  async handleMessage(@Req() req: Request, @Res() res: Response) {
+    // 使用express-xml-bodyparser中间件来解析XML消息
+    const xmlData = req.body;
 
-    // 将 XML 转换为 JSON 格式
-    const xml2js = require('xml2js');
+    // 解析XML数据
     const parser = new xml2js.Parser({ explicitArray: false });
-    parser.parseString(xmlData, async (err, result) => {
-      if (!err && result.xml) {
-        const message = result.xml;
-        const responseContent = await this.wechatService.getChat(message);
-        res.status(200).send(reply);
-      } else {
-        res.status(400).send('Invalid XML');
+    parser.parseString(xmlData, (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(400).send('Invalid XML data');
       }
+
+      // 在result对象中，您将获得解析后的XML消息内容
+      const message = result.xml;
+
+      // 在这里可以编写处理消息的逻辑
+      console.log('Received message:', message);
+
+      // 返回响应
+      res.status(200).send('Message received');
     });
   }
 }
