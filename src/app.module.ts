@@ -1,3 +1,4 @@
+import { ChatgptModule } from './chatgpt/chatgpt.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -7,7 +8,7 @@ import { WechatController } from './wechat/wechat.controller';
 import * as bodyParser from 'body-parser';
 
 @Module({
-  imports: [XinghuoModule, WechatModule],
+  imports: [XinghuoModule, WechatModule, ChatgptModule],
   controllers: [AppController],
   providers: [AppService],
 })
